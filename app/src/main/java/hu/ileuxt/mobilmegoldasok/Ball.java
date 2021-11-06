@@ -7,11 +7,12 @@ public class Ball {
     RectF rect;
     float xVelocity;
     float yVelocity;
-    float ballWidth = 30;
-    float ballHeight = 30;
+    private final float ballWidth = 40;
+    public final float ballHeight = 40;
+    private Random generator = new Random();
 
-    public Ball(int screenX, int screenY){
-        xVelocity = 200;
+    public Ball(){
+        xVelocity = (generator.nextInt(500) * (generator.nextBoolean() ? 1 : -1)) + (generator.nextBoolean() ? -100 : 100);
         yVelocity = -400;
         rect = new RectF();
     }
@@ -36,10 +37,7 @@ public class Ball {
     }
 
     public void setRandomXVelocity(){
-        Random generator = new Random();
-        int answer = generator.nextInt(10);
-
-        if(answer <= 5){
+        if(generator.nextInt(10) <= 5){
             reverseXVelocity();
         }
     }
@@ -55,9 +53,9 @@ public class Ball {
     }
 
     public void reset(int x, int y){
-        rect.left = x / 2;
+        rect.left = (x / (float)2) + 20;
         rect.top = y - 40;
-        rect.right = x / 2 + ballWidth;
+        rect.right = x / (float)2 - 20;
         rect.bottom = y - 40 - ballHeight;
     }
 }

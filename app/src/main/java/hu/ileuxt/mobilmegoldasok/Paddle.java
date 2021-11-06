@@ -4,12 +4,11 @@ import android.graphics.RectF;
 
 public class Paddle {
     private RectF rect;
-    private float length;
-    private float height;
+    private final float length = 200;
+    private final float height = 40;
+    private final float paddleSpeed = 600;
     private float x;
     private float y;
-    private float paddleSpeed;
-
     public final int STOPPED = 0;
     public final int LEFT = 1;
     public final int RIGHT = 2;
@@ -17,12 +16,9 @@ public class Paddle {
     private int paddleMoving = STOPPED;
 
     public Paddle(int screenX, int screenY){
-        length = 200;
-        height = 40;
-        x = (screenX / 2)-100;
-        y = screenY - 40;
+        x = (screenX / (float)2)-(length/2);
+        y = screenY - height;
         rect = new RectF(x, y, x + length, y + height);
-        paddleSpeed = 500;
     }
 
     public RectF getRect(){
@@ -33,11 +29,11 @@ public class Paddle {
         paddleMoving = state;
     }
 
-    public void update(long fps){
-        if(paddleMoving == LEFT){
+    public void update(long fps, int screenX){
+        if(paddleMoving == LEFT && x > 0){
             x = x - paddleSpeed / fps;
         }
-        if(paddleMoving == RIGHT){
+        if(paddleMoving == RIGHT && x+length < screenX){
             x = x + paddleSpeed / fps;
         }
         rect.left = x;

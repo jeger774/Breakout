@@ -141,7 +141,7 @@ public class BreakoutGame extends Activity {
         public void playSong() {
             try {
                 if (m.isPlaying()) return;
-                AssetFileDescriptor afd = getAssets().openFd("bg.ogg");
+                AssetFileDescriptor afd = getAssets().openFd("theme.ogg");
                 m.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
                 afd.close();
                 m.prepare();

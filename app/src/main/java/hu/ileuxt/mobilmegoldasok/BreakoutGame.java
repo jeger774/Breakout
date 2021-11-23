@@ -13,6 +13,10 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -27,7 +31,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class BreakoutGame extends Activity {
-    BreakoutView breakoutView;
+    protected BreakoutView breakoutView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +51,9 @@ public class BreakoutGame extends Activity {
         SoundPool soundPool;
         MediaPlayer m;
         Typeface customTypeface;
-        volatile boolean playing;
-        boolean paused = true;
-        long fps;
+        public volatile boolean playing;
+        public boolean paused = true;
+        private long fps;
         int screenX, screenY;
         int numBricks, score = 0;
         int lives = 3;
@@ -71,7 +75,6 @@ public class BreakoutGame extends Activity {
             ball = new Ball();
             m = new MediaPlayer();
             customTypeface = context.getResources().getFont(R.font.font);
-
             soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
             try{
                 AssetManager assetManager = context.getAssets();
@@ -86,7 +89,7 @@ public class BreakoutGame extends Activity {
                 loseLifeID = soundPool.load(descriptor, 0);
                 descriptor = assetManager.openFd("explode.ogg");
                 explodeID = soundPool.load(descriptor, 0);
-                descriptor = assetManager.openFd("gameover.ogg");
+                descriptor = assetManager.openFd("gameOver.ogg");
                 gameOverID = soundPool.load(descriptor, 0);
                 descriptor = assetManager.openFd("victory.ogg");
                 victoryID = soundPool.load(descriptor, 0);

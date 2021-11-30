@@ -42,6 +42,10 @@ public class Ball {
         }
     }
 
+    public void randomizeVelocity(){
+        xVelocity = (generator.nextInt(500) * (generator.nextBoolean() ? 1 : -1)) + (generator.nextBoolean() ? -100 : 100);
+    }
+
     public void clearObstacleY(float y){
         rect.bottom = y;
         rect.top = y - ballHeight;

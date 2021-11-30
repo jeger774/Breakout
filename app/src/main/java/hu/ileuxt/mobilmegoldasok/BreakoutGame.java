@@ -21,7 +21,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -30,13 +29,22 @@ import android.view.SurfaceView;
 import java.io.IOException;
 import java.util.Objects;
 
-public class BreakoutGame extends Activity {
+public class BreakoutGame extends Activity implements SensorEventListener {
     protected BreakoutView breakoutView;
+    private static final float SHAKE_THRESHOLD = 2.5f;
+    private static final int MIN_TIME_BETWEEN_SHAKES_MILLISECS = 10000;
+    private long mLastShakeTime;
+    private SensorManager mSensorMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         breakoutView = new BreakoutView(this);
+        mSensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
+        Sensor accelerometer = mSensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null) {
+            mSensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+        }
         setContentView(breakoutView);
     }
 
@@ -89,7 +97,7 @@ public class BreakoutGame extends Activity {
                 loseLifeID = soundPool.load(descriptor, 0);
                 descriptor = assetManager.openFd("explode.ogg");
                 explodeID = soundPool.load(descriptor, 0);
-                descriptor = assetManager.openFd("gameOver.ogg");
+                descriptor = assetManager.openFd("gameover.ogg");
                 gameOverID = soundPool.load(descriptor, 0);
                 descriptor = assetManager.openFd("victory.ogg");
                 victoryID = soundPool.load(descriptor, 0);
@@ -251,7 +259,6 @@ public class BreakoutGame extends Activity {
                 canvas = ourHolder.lockCanvas();
 
                 //draw background
-                //canvas.drawColor(Color.argb(255, 25, 50, 50));
                 Paint p = new Paint();
                 p.setDither(true);
                 p.setShader(new LinearGradient(0, 0, 0, screenY, Color.argb(255,0,30,80),
@@ -362,6 +369,31 @@ public class BreakoutGame extends Activity {
             }
             return true;
         }
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            long curTime = System.currentTimeMillis();
+            if ((curTime - mLastShakeTime) > MIN_TIME_BETWEEN_SHAKES_MILLISECS) {
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                double acceleration = Math.sqrt(Math.pow(x, 2) +
+                        Math.pow(y, 2) +
+                        Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
+                if (acceleration > SHAKE_THRESHOLD) {
+                    mLastShakeTime = curTime;
+                    breakoutView.ball.randomizeVelocity();
+                    Log.w("BREAKOUTGAME", "DEVICE SHOOK, BALL DIRECTION RANDOMIZED.");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
     }
 
     @Override
